@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="mg" data-host="pwa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bokin'ny Fivarotana</title>
+<meta name="description" content="Bokin'ny fivarotana: varotra, trosa, fividianana ary vola isan'andro.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fivarotana">
+<style id="host">
+@font-face{font-family:"Archivo";src:url(fonts/archivo-latin-500-normal.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"Archivo";src:url(fonts/archivo-latin-700-normal.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"Archivo";src:url(fonts/archivo-latin-800-normal.woff2) format("woff2");font-weight:800;font-style:normal;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible";src:url(fonts/atkinson-hyperlegible-latin-400-normal.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible";src:url(fonts/atkinson-hyperlegible-latin-700-normal.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+:root{padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:system-ui,sans-serif}
+img{max-width:100%}[hidden]{display:none!important}
+</style>
+<meta name="theme-color" content="#0F6B4F">
+<style>
+/* Layout: one narrow phone column, large touch targets, fixed bottom bar; forms take the full screen */
+:root{
+  --bg:#EEF2EE; --surface:#FFFFFF; --ink:#16201A; --muted:#58665D; --line:#D5DDD6;
+  --accent:#0F6B4F; --on-accent:#FFFFFF; --accent-bg:#DCEFE6;
+  --trosa:#9A4A06; --trosa-bg:#FBEBD5;
+  --buy:#1F4F99; --buy-bg:#DFE8F7;
+  --spend:#9C2F42; --spend-bg:#F7E0E4;
+  --night:#16201A; --on-night:#F3F6F3;
+  --good:#11734F; --warn:#9A5B00; --bad:#B3261E;
+  --f-body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-num:"Archivo", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --r:16px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1411; --surface:#17201B; --ink:#E6EDE8; --muted:#9CABA2; --line:#2B3731;
+  --accent:#3DBA8C; --on-accent:#06281C; --accent-bg:#173A2D;
+  --trosa:#F0A548; --trosa-bg:#3A2A14;
+  --buy:#82A9EC; --buy-bg:#1B2A44;
+  --spend:#EE8C9C; --spend-bg:#3C1E25;
+  --night:#E6EDE8; --on-night:#0E1411;
+  --good:#4CC995; --warn:#E9B04B; --bad:#FF8A80;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1411; --surface:#17201B; --ink:#E6EDE8; --muted:#9CABA2; --line:#2B3731;
+  --accent:#3DBA8C; --on-accent:#06281C; --accent-bg:#173A2D;
+  --trosa:#F0A548; --trosa-bg:#3A2A14;
+  --buy:#82A9EC; --buy-bg:#1B2A44;
+  --spend:#EE8C9C; --spend-bg:#3C1E25;
+  --night:#E6EDE8; --on-night:#0E1411;
+  --good:#4CC995; --warn:#E9B04B; --bad:#FF8A80;
+  color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.4;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent}
+.app{max-width:520px;margin:0 auto;padding-block:14px 110px}
+.app.form{padding-block:10px calc(28px + env(safe-area-inset-bottom,0px))}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+h1,h2{margin:0;text-wrap:balance}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.wrap{flex-wrap:wrap}
+
+/* top */
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:14px}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.top h1{font-size:1.5rem;line-height:1.15}
+.formhead{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.formhead h1{font-size:1.35rem}
+.back{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);flex:none}
+.back svg{width:22px;height:22px}
+
+/* demo banner */
+.banner{background:var(--trosa-bg);color:var(--ink);border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.banner b{color:var(--trosa)}
+.banner button{background:var(--trosa);color:var(--surface);border-radius:10px;padding:10px 14px;font-weight:700}
+.banner.info{background:var(--accent-bg)}
+.banner.info b{color:var(--accent)}
+.banner.info button{background:var(--accent);color:var(--on-accent)}
+.banner.alert{background:var(--spend-bg)}
+.banner.alert b{color:var(--spend)}
+.banner.alert button{background:var(--spend);color:var(--surface)}
+.confirm{border:2px solid var(--bad);border-radius:var(--r);padding:14px;background:var(--surface)}
+
+/* summary */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.big{font-size:2.5rem;font-weight:800;line-height:1.05}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.stat .v{font-size:1.25rem;font-weight:700}
+.stat .k{font-size:.85rem;color:var(--muted)}
+.pending{font-size:1.15rem;font-weight:700;color:var(--muted)}
+
+/* action tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.tile{min-height:96px;border-radius:var(--r);padding:14px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;gap:8px}
+.tile .ic{width:34px;height:34px}
+.tile b{font-size:1.15rem}
+.tile small{font-size:.8rem;opacity:.85}
+.t-sale{background:var(--accent-bg);color:var(--accent)}
+.t-trosa{background:var(--trosa-bg);color:var(--trosa)}
+.t-buy{background:var(--buy-bg);color:var(--buy)}
+.t-spend{background:var(--spend-bg);color:var(--spend)}
+.tile b,.tile small{color:var(--ink)}
+.tile.wide{grid-column:1/-1;min-height:72px;flex-direction:row;align-items:center;justify-content:flex-start}
+.night{margin-top:10px;width:100%;min-height:64px;border-radius:var(--r);background:var(--night);color:var(--on-night);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:1.1rem}
+.night svg{width:24px;height:24px}
+.night.done{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+
+/* lists */
+.sec{margin-top:22px}
+.sec h2{font-size:1.05rem;margin-bottom:8px}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}
+.li:first-child{border-top:0}
+.li .main{flex:1;min-width:0}
+.li .main b{display:block;overflow-wrap:anywhere}
+.li .amt{font-weight:700;white-space:nowrap}
+.dot{width:10px;height:10px;border-radius:50%;flex:none}
+.d-sale{background:var(--accent)}.d-trosa{background:var(--trosa)}.d-buy{background:var(--buy)}.d-spend{background:var(--spend)}
+.del{font-size:.85rem;color:var(--muted);padding:8px;border-radius:8px}
+.del.ask{color:var(--surface);background:var(--bad);font-weight:700}
+.empty{padding:18px 14px;color:var(--muted)}
+.pos{color:var(--good)}.neg{color:var(--bad)}
+
+/* forms */
+.lbl{font-size:.9rem;font-weight:700;color:var(--muted);margin-bottom:6px;display:block}
+.inp{width:100%;height:54px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 14px;font-size:1.15rem}
+.inp.money{font-family:var(--f-num);font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:.95rem}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.primary{width:100%;min-height:58px;border-radius:14px;background:var(--accent);color:var(--on-accent);font-weight:700;font-size:1.15rem}
+.primary:disabled{opacity:.4}
+.ghost{min-height:48px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:700}
+.danger{background:var(--bad);color:#fff;border-color:var(--bad)}
+
+/* keypad */
+.display{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;text-align:right}
+.display .big{font-size:3rem}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.key{height:62px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-family:var(--f-num);font-size:1.6rem;font-weight:700}
+.key:active{transform:scale(.97)}
+.key.alt{font-size:1.1rem;color:var(--muted)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.quick .chip{padding:8px 4px}
+
+/* items (achat) */
+.item{display:grid;grid-template-columns:1fr 64px 104px;gap:8px;align-items:end}
+.item .inp{height:50px;font-size:1rem;padding:0 10px}
+.item .lbl{font-size:.75rem}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0;border-top:1px solid var(--line)}
+
+/* result block (close) */
+.result{border-radius:var(--r);padding:16px;background:var(--surface);border:1px solid var(--line)}
+.res-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0}
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;font-weight:700;font-size:.85rem}
+.b-good{background:var(--accent-bg);color:var(--good)}
+.b-warn{background:var(--trosa-bg);color:var(--warn)}
+.b-bad{background:var(--spend-bg);color:var(--bad)}
+.b-mute{background:var(--bg);color:var(--muted)}
+
+/* mode cards */
+.opt{display:block;text-align:left;width:100%;border:2px solid var(--line);border-radius:var(--r);padding:14px;background:var(--surface)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-bg)}
+.opt b{display:block;font-size:1.05rem;margin-bottom:4px}
+
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:6px max(16px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:5}
+.nav .in{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border-radius:12px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.nav button svg{width:24px;height:24px}
+.nav button[aria-current="page"]{color:var(--accent);background:var(--accent-bg)}
+
+/* sheet + toast */
+.sheet{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,16,12,.45)}
+.sheet .panel{width:100%;max-width:560px;background:var(--bg);border-radius:22px 22px 0 0;
+  padding:18px max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:30;
+  background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:700;max-width:calc(100% - 32px);text-align:center;transition:opacity .2s}
+.toast.hide{opacity:0;pointer-events:none}
+textarea.inp{height:120px;padding:10px;font-size:.8rem;font-family:ui-monospace,monospace}
+details summary{cursor:pointer;font-weight:700}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}.key:active{transform:none}}
+@media (max-width:360px){.big{font-size:2.1rem}.display .big{font-size:2.5rem}.item{grid-template-columns:1fr 54px 92px}}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+<nav class="nav" id="nav" aria-label="Fizarana lehibe"><div class="in">
+  <button data-act="go" data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Anio</button>
+  <button data-act="go" data-v="trosa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11"/><path d="M9 7h6M9 10.5h4"/></svg>Trosa</button>
+  <button data-act="go" data-v="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Tantara</button>
+  <button data-act="go" data-v="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Fikirakirana</button>
+</div></nav>
+<div id="sheet"></div>
+<div id="toast" class="toast hide" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+var KEY = "bokin-fivarotana-v1";
+var APP_VERSION = "0.2.0";
+var ROOT = document.documentElement;
+var HOSTED = ROOT.getAttribute("data-host") === "pwa";
+var PAYS = [["cash","Vola an-tanana"],["mvola","MVola"],["orange","Orange Money"],["airtel","Airtel Money"]];
+var CATS = ["Hofan-trano","Karama","Jiro sy rano","Fitaterana","Hetra","Hafa"];
+var PRODUCTS = ["Vary","Siramamy","Menaka","Savony","Lafarinina","Sira","Dite","Kafe","Paty","Ronono","Labozia","Mofo","Arina"];
+var DAYS = ["Alahady","Alatsinainy","Talata","Alarobia","Alakamisy","Zoma","Asabotsy"];
+var MONTHS = ["Janoary","Febroary","Martsa","Aprily","Mey","Jona","Jolay","Aogositra","Septambra","Oktobra","Novambra","Desambra"];
+var T = {
+  vente:{label:"Varotra", dot:"sale", sign:1},
+  trosa:{label:"Trosa nomena", dot:"trosa", sign:0},
+  naloa:{label:"Trosa naloa", dot:"trosa", sign:1},
+  achat:{label:"Fividianana entana", dot:"buy", sign:-1},
+  depense:{label:"Fandaniana", dot:"spend", sign:-1},
+  tokantrano:{label:"Ho an'ny tokantrano", dot:"spend", sign:-1},
+  apport:{label:"Vola nampidirina", dot:"sale", sign:1}
+};
+var IC = {
+  sale:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v4M18 10v4"/></svg>',
+  trosa:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11a3 3 0 0 1 3 3v15H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11"/><path d="M9 7h6M9 10.5h4"/></svg>',
+  buy:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
+  spend:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>',
+  moon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>'
+};
+
+/* ---------- helpers ---------- */
+function pad(n){return (n<10?"0":"")+n}
+function keyOf(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function today(){return keyOf(new Date())}
+function dateOf(k){var p=k.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function dayLabel(k){var d=dateOf(k);return DAYS[d.getDay()]+" "+d.getDate()+" "+MONTHS[d.getMonth()]}
+function shortDay(k){var d=dateOf(k);return d.getDate()+" "+MONTHS[d.getMonth()].slice(0,3)}
+function hhmm(t){var d=new Date(t);return pad(d.getHours())+":"+pad(d.getMinutes())}
+function fmt(n){if(n===null||n===undefined||isNaN(n))return "—";var s=Math.round(Math.abs(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ");return (n<0?"−":"")+s+" Ar"}
+function num(v){return parseInt(String(v||"").replace(/[^\d]/g,""),10)||0}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+var uid=(function(){var c=0;return function(){c++;return Date.now().toString(36)+c.toString(36)+Math.floor(Math.random()*1e4).toString(36)}})();
+function sum(a,f){var s=0;for(var i=0;i<a.length;i++)s+=f(a[i]);return s}
+function $(id){return document.getElementById(id)}
+function payLabel(p){for(var i=0;i<PAYS.length;i++)if(PAYS[i][0]===p)return PAYS[i][1];return ""}
+
+/* ---------- state ---------- */
+var S=null;
+var ui={view:"home",amt:"",pay:"cash",sheet:null,achat:null,dep:null,pendingDel:null,openDay:null,resetAsk:false,obMode:"A",closeCounts:{},importPending:null};
+var deferredInstall=null, updateReady=null;
+function load(){
+  var raw=null;
+  try{raw=localStorage.getItem(KEY)}catch(e){}
+  if(raw){try{S=JSON.parse(raw)}catch(e){S=null}}
+  if(!S||!S.profile){S=demo();if(HOSTED)ui.view="onboard"}
+  logOpen();
+}
+function save(){if(S.demo)return;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}syncSoon()}
+/* days the app was opened: feeds the field-test retention indicators */
+function logOpen(){if(S.demo)return;S.opens=S.opens||[];var k=today();if(S.opens.indexOf(k)<0){S.opens.push(k);save()}}
+
+/* ---------- backup ---------- */
+function shopSlug(){
+  var s=String(S.profile.shop||"fivarotana").toLowerCase();
+  try{s=s.normalize("NFD").replace(/[̀-ͯ]/g,"")}catch(e){}
+  return s.replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")||"fivarotana";
+}
+function backupName(){return "bokin-"+shopSlug()+"-"+today()+".txt"}
+function markBackup(){S.lastBackup=Date.now();save()}
+function downloadBackup(){
+  try{
+    var url=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:"text/plain"}));
+    var a=document.createElement("a");a.href=url;a.download=backupName();document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url)},3000);
+    markBackup();softRender();toast("Voatahiry ao amin'ny finday: "+backupName());
+  }catch(e){toast("Tsy nety. Ampiasao ny fomba hafa eto ambany.")}
+}
+function shareBackup(){
+  var file=null;
+  try{file=new File([JSON.stringify(S)],backupName(),{type:"text/plain"})}catch(e){}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:"Tahirin'ny "+S.profile.shop}).then(function(){markBackup();softRender();toast("Voalefa ny tahiry")},function(){});
+  }else downloadBackup();
+}
+function backupDue(){
+  if(S.demo||!S.ops.length)return false;
+  if(syncOn()&&!SY.err&&SY.last)return false;
+  return Date.now()-(S.lastBackup||S.created||0)>7*864e5;
+}
+
+/* ---------- GitHub sync: the whole state is written as one JSON file in a private repo.
+   The token is typed on each phone and kept only in its localStorage, never in the published code. ---------- */
+var SYNC_KEY="bokin-sync-v1", DEFAULT_REPO="jejew03/bokin-data";
+var SY=(function(){try{return JSON.parse(localStorage.getItem(SYNC_KEY))||{}}catch(e){return {}}})();
+if(!SY.id){SY.id=Math.random().toString(36).slice(2,8);try{localStorage.setItem(SYNC_KEY,JSON.stringify(SY))}catch(e){}}
+var syncTimer=null,syncBusy=false,syncAgain=false;
+function sySave(){try{localStorage.setItem(SYNC_KEY,JSON.stringify(SY))}catch(e){}}
+function syncOn(){return !!(SY.repo&&SY.token&&SY.path)}
+function defaultPath(){return "data/"+shopSlug()+"-"+SY.id+".json"}
+function b64enc(s){return btoa(unescape(encodeURIComponent(s)))}
+function ghReq(method,body,raw){
+  return fetch("https://api.github.com/repos/"+SY.repo+"/contents/"+SY.path,{method:method,cache:"no-store",
+    headers:{Authorization:"Bearer "+SY.token,Accept:raw?"application/vnd.github.raw+json":"application/vnd.github+json"},
+    body:body?JSON.stringify(body):undefined});
+}
+function ghError(r){return new Error(r.status===401?"token diso":r.status===404?"tsy hita ny repo":"GitHub "+r.status)}
+function syncSoon(){
+  if(!syncOn()||S.demo)return;
+  SY.dirty=true;sySave();
+  if(syncBusy){syncAgain=true;return}
+  clearTimeout(syncTimer);syncTimer=setTimeout(syncPush,5000);
+}
+function syncPush(){
+  clearTimeout(syncTimer);syncTimer=null;
+  if(!syncOn()||S.demo||syncBusy)return Promise.resolve();
+  if(!navigator.onLine){SY.dirty=true;sySave();return Promise.resolve()}
+  syncBusy=true;
+  var content=b64enc(JSON.stringify(S,null,1));
+  var put=function(sha){return ghReq("PUT",{message:S.profile.shop+" · "+today()+" "+hhmm(Date.now()),content:content,sha:sha||undefined})};
+  return put(SY.sha).then(function(r){
+    /* unknown or stale sha: fetch the current one and retry once (this phone is the source of truth) */
+    if(r.status!==409&&r.status!==422)return r;
+    return ghReq("GET").then(function(g){return g.ok?g.json():{}}).then(function(j){return put(j.sha)});
+  }).then(function(r){if(!r.ok)throw ghError(r);return r.json()})
+  .then(function(j){SY.sha=j.content.sha;SY.dirty=false;SY.last=Date.now();SY.err=""})
+  .catch(function(e){SY.err=String(e&&e.message||e)})
+  .then(function(){
+    syncBusy=false;sySave();if(ui.view==="settings")softRender();
+    if(syncAgain){syncAgain=false;syncSoon()}
+  });
+}
+function syncPull(){
+  ghReq("GET",null,true).then(function(r){if(!r.ok)throw ghError(r);return r.text()})
+  .then(function(t){ui.importPending=parseBackup(t);render();toast("Hamarino ny fanontaniana ao amin'ny Tahiry")})
+  .catch(function(e){toast("Tsy nety: "+(e&&e.message||e))});
+}
+function syncStatus(){
+  if(!syncOn())return "Tsy mbola mandeha.";
+  if(syncBusy)return "Alefa…";
+  if(SY.err)return '<b style="color:var(--bad)">Nisy olana: '+esc(SY.err)+'</b>';
+  if(SY.dirty)return "Miandry internet ny fanovana farany.";
+  return SY.last?"Lasa farany: <b>"+dayLabel(keyOf(new Date(SY.last)))+" "+hhmm(SY.last)+"</b>":"Mbola tsy nisy nalefa.";
+}
+function isStandalone(){try{return matchMedia("(display-mode: standalone)").matches||navigator.standalone===true}catch(e){return false}}
+function notices(){
+  var h="";
+  if(updateReady)h+='<div class="banner info"><span><b>Misy dikan-teny vaovao.</b> Tsy ho very ny angonao.</span><button data-act="applyUpdate">Havaozina</button></div>';
+  if(!S.demo&&backupDue())h+='<div class="banner alert"><span><b>Tehirizo ny angonao.</b> Efa ela no tsy nisy tahiry.</span><button data-act="shareBk">Hanao tahiry</button></div>';
+  if(!S.demo&&deferredInstall&&!isStandalone())h+='<div class="banner info"><span><b>Apetraho eo amin\'ny efijery</b> mba hisokatra haingana na tsy misy internet.</span><button data-act="install">Apetraho</button></div>';
+  return h;
+}
+
+/* ---------- accounting ---------- */
+function opsOn(k){return S.ops.filter(function(o){return o.day===k})}
+function flows(ops){
+  var f={vente:0,trosa:0,naloa:0,apport:0,achat:0,depense:0,tokantrano:0};
+  ops.forEach(function(o){f[o.type]=(f[o.type]||0)+o.amount});
+  f.out=f.achat+f.depense+f.tokantrano;
+  return f;
+}
+function period(k){
+  var keys=Object.keys(S.closings).filter(function(x){return x<k}).sort();
+  var last=keys.length?keys[keys.length-1]:null;
+  var start=last?S.closings[last].total:(S.opening?S.opening.total:0);
+  var ops=S.ops.filter(function(o){return (!last||o.day>last)&&o.day<=k});
+  return {start:start,last:last,ops:ops};
+}
+/* Mode B: expected = start + sales + repayments + top-ups - purchases - expenses - household; gap = counted - expected
+   Mode A: sales = counted - start - repayments - top-ups + purchases + expenses + household (+ new credit for total sales) */
+function calc(k,counted){
+  var p=period(k),f=flows(p.ops),mode=S.profile.mode,r={start:p.start,last:p.last,f:f,mode:mode,counted:counted};
+  if(mode==="B"){
+    r.expected=p.start+f.vente+f.naloa+f.apport-f.out;
+    r.ecart=counted===null?null:counted-r.expected;
+    r.cashSales=f.vente;
+  }else{
+    r.expected=null;r.ecart=null;
+    r.cashSales=counted===null?null:counted-p.start-f.naloa-f.apport+f.out;
+  }
+  r.ventes=r.cashSales===null?null:r.cashSales+f.trosa;
+  return r;
+}
+function dayVentes(k){
+  var c=S.closings[k];if(c)return c.ventes;
+  if(S.profile.mode==="B"){var f=flows(opsOn(k));return f.vente+f.trosa}
+  return null;
+}
+function clients(){
+  var m={};
+  S.ops.forEach(function(o){
+    if(o.type!=="trosa"&&o.type!=="naloa")return;
+    var id=o.client.trim().toLowerCase();
+    if(!m[id])m[id]={name:o.client.trim(),bal:0,last:o.t};
+    m[id].bal+=o.type==="trosa"?o.amount:-o.amount;
+    if(o.t>m[id].last)m[id].last=o.t;
+  });
+  return Object.keys(m).map(function(k){return m[k]});
+}
+function totalDue(){return sum(clients(),function(c){return Math.max(0,c.bal)})}
+function knownProducts(){
+  var set={},prices={};
+  PRODUCTS.forEach(function(p){set[p]=1});
+  S.ops.forEach(function(o){if(o.type==="achat")o.items.forEach(function(it){set[it.name]=1;prices[it.name.toLowerCase()]=it.price})});
+  return {names:Object.keys(set).sort(),prices:prices};
+}
+function addOp(o){o.id=uid();o.t=o.t||Date.now();o.day=o.day||keyOf(new Date(o.t));S.ops.push(o);save()}
+
+/* ---------- demo ---------- */
+function demo(){
+  var s={v:1,demo:true,profile:{shop:"Épicerie Tsiky",owner:"Rasoa",phone:"",mode:"B"},opening:null,ops:[],closings:{}};
+  var prev=S;S=s;
+  var seed=7;function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646}
+  function pick(a){return a[Math.floor(rnd()*a.length)]}
+  var now=new Date(),base=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  function dk(i){var d=new Date(base);d.setDate(d.getDate()+i);return d}
+  s.opening={counts:{cash:120000,mvola:35000,orange:0,airtel:0},total:155000,day:keyOf(dk(-6))};
+  var sales=[200,300,500,500,600,800,1000,1000,1200,1500,2000,2500,3000,4500,6000];
+  var names=["Ramanana","Ravelo","Neny Soa","Dada Koto"];
+  var gaps={"-6":-500,"-5":0,"-4":200,"-3":0,"-2":-1000,"-1":0};
+  function at(d,h,m){var x=new Date(d);x.setHours(h,m,0,0);return x.getTime()}
+  for(var i=-6;i<=0;i++){
+    var d=dk(i),k=keyOf(d),n=i===0?9:14+Math.floor(rnd()*8);
+    function push(o){if(o.t>Date.now())return;o.id=uid();o.day=k;s.ops.push(o)}
+    for(var j=0;j<n;j++){push({type:"vente",amount:pick(sales),pay:rnd()<.2?"mvola":"cash",t:at(d,7+Math.floor(j*(i===0?0.5:0.8)),Math.floor(rnd()*59))})}
+    push({type:"trosa",client:names[(i+6)%4],amount:pick([1500,2000,3500,5000]),t:at(d,8,15)});
+    if(i%2===0&&i<0)push({type:"naloa",client:names[(i+7)%4],amount:2000,pay:"cash",t:at(d,17,40)});
+    if(i===-5||i===0)push({type:"achat",supplier:"Grossiste Analakely",items:[{name:"Siramamy",qty:10,price:4200},{name:"Menaka",qty:6,price:7800},{name:"Savony",qty:12,price:1100}],amount:10*4200+6*7800+12*1100,pay:"cash",t:at(d,7,5)});
+    if(i===-4)push({type:"depense",cat:"Jiro sy rano",amount:18000,pay:"mvola",t:at(d,10,0)});
+    if(i===-1)push({type:"depense",cat:"Fitaterana",amount:3000,pay:"cash",t:at(d,7,30)});
+    if(i===-3)push({type:"tokantrano",amount:10000,pay:"cash",t:at(d,19,0)});
+    if(i===-1)push({type:"tokantrano",amount:15000,pay:"cash",t:at(d,19,5)});
+    if(i<0){
+      var r=calc(k,null),counted=r.expected+gaps[String(i)],mv=Math.min(40000,Math.round(counted*0.2/500)*500);
+      var c=calc(k,counted);
+      s.closings[k]={counts:{cash:counted-mv,mvola:mv,orange:0,airtel:0},total:counted,at:at(d,19,30),mode:"B",start:c.start,ventes:c.ventes,expected:c.expected,ecart:c.ecart};
+    }
+  }
+  s.ops.sort(function(a,b){return a.t-b.t});
+  S=prev;
+  return s;
+}
+
+/* ---------- views ---------- */
+function payChips(cur,act){
+  return '<div class="chips" role="group" aria-label="Fomba fandoavana">'+PAYS.map(function(p){
+    return '<button class="chip" data-act="'+act+'" data-p="'+p[0]+'" aria-pressed="'+(cur===p[0])+'">'+p[1]+'</button>'}).join("")+'</div>';
+}
+function opText(o){
+  if(o.type==="trosa"||o.type==="naloa")return esc(o.client);
+  if(o.type==="achat")return esc(o.items.map(function(i){return i.name}).join(", "))+(o.supplier?' · '+esc(o.supplier):"");
+  if(o.type==="depense")return esc(o.cat)+(o.note?" · "+esc(o.note):"");
+  return o.pay&&o.pay!=="cash"?payLabel(o.pay):"";
+}
+function opList(ops,emptyMsg){
+  if(!ops.length)return '<div class="list"><div class="empty">'+emptyMsg+'</div></div>';
+  return '<div class="list">'+ops.slice().sort(function(a,b){return b.t-a.t}).map(function(o){
+    var t=T[o.type],sign=t.sign>0?"+":t.sign<0?"−":"",cls=t.sign>0?"pos":t.sign<0?"neg":"";
+    var ask=ui.pendingDel===o.id;
+    return '<div class="li"><span class="dot d-'+t.dot+'"></span><div class="main"><b>'+t.label+'</b><span class="muted small">'+hhmm(o.t)+(opText(o)?' · '+opText(o):"")+'</span></div>'+
+      '<span class="amt num '+cls+'">'+sign+fmt(o.amount)+'</span>'+
+      '<button class="del'+(ask?" ask":"")+'" data-act="'+(ask?"delok":"del")+'" data-id="'+o.id+'">'+(ask?"Fafana?":"Fafana")+'</button></div>';
+  }).join("")+'</div>';
+}
+function banner(){
+  if(!S.demo)return notices();
+  return '<div class="banner"><span><b>Ohatra ihany</b> ireto tarehimarika ireto. Tsy voatahiry izay ataonao eto.</span><button data-act="start">Hanomboka ho ahy</button></div>';
+}
+
+function vHome(){
+  var k=today(),f=flows(opsOn(k)),closed=S.closings[k],mode=S.profile.mode;
+  var p=period(k),pf=flows(p.ops),est=p.start+pf.vente+pf.naloa+pf.apport-pf.out;
+  var head;
+  if(closed){head='<div class="k muted">Varotra anio</div><div class="big num">'+fmt(closed.ventes)+'</div><div class="muted small">Voakatona tamin\'ny '+hhmm(closed.at)+'</div>'}
+  else if(mode==="B"){head='<div class="k muted">Varotra anio</div><div class="big num">'+fmt(f.vente+f.trosa)+'</div><div class="muted small">'+opsOn(k).filter(function(o){return o.type==="vente"}).length+' varotra voasoratra'+(f.trosa?' · anisan\'izany '+fmt(f.trosa)+' trosa':'')+'</div>'}
+  else{head='<div class="k muted">Varotra anio</div><div class="pending">Isaina hariva rehefa manakatona ny andro</div>'}
+  var stats='<div class="stats">'+
+    '<div class="stat"><div class="v num">'+fmt(f.out)+'</div><div class="k">Vola nivoaka anio</div></div>'+
+    '<div class="stat"><div class="v num">'+fmt(f.trosa)+'</div><div class="k">Trosa nomena anio</div></div>'+
+    (mode==="B"&&!closed?'<div class="stat"><div class="v num">'+fmt(est)+'</div><div class="k">Vola tokony ho ao aminao</div></div>':'<div class="stat"><div class="v num">'+fmt(closed?closed.total:p.start)+'</div><div class="k">'+(closed?'Vola nisaina hariva':'Vola tamin\'ny maraina')+'</div></div>')+
+    '<div class="stat"><div class="v num">'+fmt(totalDue())+'</div><div class="k">Trosa mbola tsy voaloa</div></div></div>';
+  var tiles='<div class="tiles">'+
+    (mode==="B"?'<button class="tile t-sale" data-act="go" data-v="vente">'+IC.sale+'<span><b>Varotra</b><br><small>Soraty ny vola voaray</small></span></button>':'')+
+    '<button class="tile t-trosa" data-act="go" data-v="trosa">'+IC.trosa+'<span><b>Trosa</b><br><small>Iza no mitrosa?</small></span></button>'+
+    '<button class="tile t-buy" data-act="go" data-v="achat">'+IC.buy+'<span><b>Fividianana</b><br><small>Entana vaovao</small></span></button>'+
+    '<button class="tile t-spend'+(mode==="A"?" wide":"")+'" data-act="go" data-v="depense">'+IC.spend+'<span><b>Fandaniana</b><br><small>Hofan-trano, karama, tokantrano…</small></span></button>'+
+    '</div>';
+  var night='<button class="night'+(closed?" done":"")+'" data-act="go" data-v="close">'+IC.moon+(closed?'Ovay ny fanakatonana':'Hanakatona ny andro')+'</button>';
+  return banner()+
+    '<div class="top"><div><div class="eyebrow">'+esc(S.profile.shop)+'</div><h1>'+dayLabel(k)+'</h1></div></div>'+
+    '<div class="card">'+head+stats+'</div>'+tiles+night+
+    '<div class="sec"><h2>Ny nataoko anio</h2>'+opList(opsOn(k),"Mbola tsy misy voasoratra anio.")+'</div>';
+}
+
+function formHead(title,sub){
+  return '<div class="formhead"><button class="back" data-act="go" data-v="'+(ui.view==="onboard"?"home":"home")+'" aria-label="Hiverina">'+IC.back+'</button><div><h1>'+title+'</h1>'+(sub?'<div class="muted small">'+sub+'</div>':'')+'</div></div>';
+}
+
+function vVente(){
+  var k=today(),vs=opsOn(k).filter(function(o){return o.type==="vente"});
+  var a=num(ui.amt);
+  var keys=["1","2","3","4","5","6","7","8","9","000","0","⌫"];
+  return formHead("Varotra","Soraty ny vola voaray, tsindrio Raiketina")+
+    '<div class="stack">'+
+    '<div class="display"><div class="big num" id="amt">'+fmt(a)+'</div></div>'+
+    '<div class="quick">'+[500,1000,2000,5000].map(function(v){return '<button class="chip num" data-act="quick" data-v="'+v+'">'+fmt(v).replace(" Ar","")+'</button>'}).join("")+'</div>'+
+    '<div class="pad">'+keys.map(function(x){return '<button class="key'+(x==="⌫"||x==="000"?" alt":"")+'" data-act="key" data-k="'+x+'" aria-label="'+(x==="⌫"?"Fafana tarehimarika":x)+'">'+x+'</button>'}).join("")+'</div>'+
+    payChips(ui.pay,"pay")+
+    '<button class="primary" data-act="saveVente"'+(a?"":" disabled")+'>Raiketina</button>'+
+    '<div class="row between muted small"><span>Varotra anio: <b class="num">'+vs.length+'</b></span><span class="num">'+fmt(sum(vs,function(o){return o.amount}))+'</span></div>'+
+    '</div>';
+}
+
+function vTrosa(){
+  var cs=clients().sort(function(a,b){return b.bal-a.bal||b.last-a.last});
+  var q=(ui.q||"").trim().toLowerCase();
+  var shown=cs.filter(function(c){return !q||c.name.toLowerCase().indexOf(q)>=0});
+  var exact=cs.some(function(c){return c.name.toLowerCase()===q});
+  var list=shown.length?'<div class="list">'+shown.map(function(c){
+      return '<div class="li"><div class="main"><b>'+esc(c.name)+'</b><span class="muted small">Farany: '+shortDay(keyOf(new Date(c.last)))+'</span></div>'+
+        '<span class="amt num '+(c.bal>0?"neg":"")+'">'+(c.bal>0?fmt(c.bal):"Voaloa")+'</span></div>'+
+        '<div class="li" style="border-top:0;padding-top:0"><button class="ghost" style="flex:1" data-act="sheet" data-k="trosa" data-n="'+esc(c.name)+'">+ Trosa</button><button class="ghost" style="flex:1" data-act="sheet" data-k="naloa" data-n="'+esc(c.name)+'"'+(c.bal>0?"":" disabled")+'>Naloa</button></div>';
+    }).join("")+'</div>':'<div class="list"><div class="empty">'+(q?"Tsy misy mpanjifa mitovy amin'io anarana io.":"Mbola tsy misy trosa voasoratra.")+'</div></div>';
+  return banner()+'<div class="top"><div><div class="eyebrow">Bokin\'ny trosa</div><h1>Trosa</h1></div></div>'+
+    '<div class="card"><div class="k muted">Trosa rehetra mbola tsy voaloa</div><div class="big num">'+fmt(totalDue())+'</div><div class="muted small">'+cs.filter(function(c){return c.bal>0}).length+' mpanjifa</div></div>'+
+    '<div class="sec stack"><div><label class="lbl" for="q">Anaran\'ny mpanjifa</label><input id="q" class="inp" autocomplete="off" placeholder="Karohy na soraty anarana vaovao" value="'+esc(ui.q||"")+'"></div>'+
+    (q&&!exact?'<button class="primary" data-act="sheet" data-k="trosa" data-n="'+esc(ui.q.trim())+'">Trosa vaovao ho an\'i '+esc(ui.q.trim())+'</button>':'')+
+    list+'</div>';
+}
+
+function sheetHtml(){
+  var s=ui.sheet;if(!s)return "";
+  var isT=s.k==="trosa";
+  return '<div class="sheet" data-act="closeSheet"><div class="panel stack" data-stop="1" role="dialog" aria-modal="true" aria-label="'+(isT?"Trosa vaovao":"Trosa naloa")+'">'+
+    '<div><div class="eyebrow">'+(isT?"Trosa vaovao":"Trosa naloa")+'</div><h2 style="font-size:1.35rem">'+esc(s.n)+'</h2></div>'+
+    '<div><label class="lbl" for="sh-amt">Ohatrinona?</label><input id="sh-amt" class="inp money" inputmode="numeric" autocomplete="off" placeholder="0"></div>'+
+    (isT?'':'<div><span class="lbl">Fomba nandoavana</span>'+payChips(s.pay||"cash","shpay")+'</div>')+
+    '<div class="row"><button class="ghost" style="flex:1" data-act="closeSheet">Aoka ihany</button><button class="primary" style="flex:2" data-act="saveSheet">Raiketina</button></div>'+
+    '</div></div>';
+}
+
+function vAchat(){
+  if(!ui.achat)ui.achat={supplier:"",items:[{name:"",qty:"",price:""}],pay:"cash"};
+  var a=ui.achat,kp=knownProducts();
+  var rows=a.items.map(function(it,i){
+    return '<div class="item"><div><label class="lbl" for="it-n-'+i+'">Entana</label><input id="it-n-'+i+'" class="inp" list="prods" data-f="name" data-i="'+i+'" value="'+esc(it.name)+'" autocomplete="off"></div>'+
+      '<div><label class="lbl" for="it-q-'+i+'">Isa</label><input id="it-q-'+i+'" class="inp num" inputmode="numeric" data-f="qty" data-i="'+i+'" value="'+esc(it.qty)+'"></div>'+
+      '<div><label class="lbl" for="it-p-'+i+'">Vidiny iray</label><input id="it-p-'+i+'" class="inp num" inputmode="numeric" data-f="price" data-i="'+i+'" value="'+esc(it.price)+'"></div></div>';
+  }).join("");
+  return formHead("Fividianana entana","Soraty tsirairay ny entana novidiana")+
+    '<datalist id="prods">'+kp.names.map(function(n){return '<option value="'+esc(n)+'">'}).join("")+'</datalist>'+
+    '<datalist id="sups">'+uniqueSuppliers().map(function(n){return '<option value="'+esc(n)+'">'}).join("")+'</datalist>'+
+    '<div class="stack"><div><label class="lbl" for="sup">Mpamatsy (raha tianao)</label><input id="sup" class="inp" list="sups" value="'+esc(a.supplier)+'" autocomplete="off" placeholder="Ohatra: grossiste"></div>'+
+    rows+'<button class="ghost" data-act="addItem">+ Entana hafa</button>'+
+    '<div class="total"><span class="muted">Fitambarany</span><span class="big num" id="achat-total" style="font-size:1.8rem">'+fmt(achatTotal())+'</span></div>'+
+    '<div><span class="lbl">Fomba nandoavana</span>'+payChips(a.pay,"apay")+'</div>'+
+    '<button class="primary" data-act="saveAchat">Raiketina</button></div>';
+}
+function uniqueSuppliers(){var m={};S.ops.forEach(function(o){if(o.type==="achat"&&o.supplier)m[o.supplier]=1});return Object.keys(m)}
+function achatTotal(){return sum(ui.achat.items,function(it){return num(it.qty)*num(it.price)})}
+
+function vDepense(){
+  if(!ui.dep)ui.dep={kind:"depense",cat:null,pay:"cash"};
+  var d=ui.dep;
+  var kinds=[["depense","Fandaniana"],["tokantrano","Ho an'ny tokantrano"],["apport","Vola nampidirina"]];
+  var help={depense:"Vola laniana ho an'ny fivarotana.",tokantrano:"Vola nalaina tao amin'ny vata ho an'ny ankohonana.",apport:"Vola nampidirinao tao amin'ny vata avy any ivelany."};
+  return formHead("Vola nivoaka sy niditra","")+
+    '<div class="stack"><div class="chips" role="group" aria-label="Karazana">'+kinds.map(function(x){return '<button class="chip" data-act="dkind" data-v="'+x[0]+'" aria-pressed="'+(d.kind===x[0])+'">'+x[1]+'</button>'}).join("")+'</div>'+
+    '<div class="muted small">'+help[d.kind]+'</div>'+
+    (d.kind==="depense"?'<div><span class="lbl">Inona?</span><div class="chips">'+CATS.map(function(c){return '<button class="chip" data-act="dcat" data-v="'+c+'" aria-pressed="'+(d.cat===c)+'">'+c+'</button>'}).join("")+'</div></div>':'')+
+    '<div><label class="lbl" for="d-amt">Ohatrinona?</label><input id="d-amt" class="inp money" inputmode="numeric" autocomplete="off" placeholder="0"></div>'+
+    '<div><span class="lbl">Fomba fandoavana</span>'+payChips(d.pay,"dpay")+'</div>'+
+    (d.kind==="depense"?'<div><label class="lbl" for="d-note">Fanamarihana (raha tianao)</label><input id="d-note" class="inp" autocomplete="off"></div>':'')+
+    '<button class="primary" data-act="saveDep">Raiketina</button></div>';
+}
+
+function vClose(){
+  var k=today(),ex=S.closings[k];
+  if(!ui.closeInit){ui.closeCounts=ex?Object.assign({},ex.counts):{};ui.closeInit=true}
+  var r=calc(k,null),f=r.f;
+  var since=r.last?'tamin\'ny fanakatonana '+dayLabel(r.last):'tamin\'ny nanombohanao';
+  var rows=[
+    ["Varotra voasoratra",S.profile.mode==="B"?f.vente:null,1],
+    ["Trosa naloa",f.naloa,1],["Vola nampidirina",f.apport,1],
+    ["Fividianana",f.achat,-1],["Fandaniana",f.depense,-1],["Ho an'ny tokantrano",f.tokantrano,-1]
+  ].filter(function(x){return x[1]!==null&&x[1]>0});
+  return formHead("Fanakatonana ny andro",dayLabel(k))+
+    '<div class="stack"><div class="card"><div class="res-row"><span class="muted">Vola '+since+'</span><b class="num">'+fmt(r.start)+'</b></div>'+
+    rows.map(function(x){return '<div class="res-row"><span class="muted">'+x[0]+'</span><span class="num '+(x[2]>0?"pos":"neg")+'">'+(x[2]>0?"+":"−")+fmt(x[1])+'</span></div>'}).join("")+
+    (f.trosa?'<div class="res-row"><span class="muted">Trosa nomena (tsy vola niditra)</span><span class="num">'+fmt(f.trosa)+'</span></div>':'')+'</div>'+
+    '<div><h2 style="font-size:1.1rem;margin-bottom:4px">Isao ny vola ananao izao</h2><div class="muted small">Ao anaty vata sy ao amin\'ny finday.</div></div>'+
+    PAYS.map(function(p){return '<div><label class="lbl" for="c-'+p[0]+'">'+p[1]+'</label><input id="c-'+p[0]+'" class="inp money" inputmode="numeric" autocomplete="off" data-c="'+p[0]+'" placeholder="0" value="'+(ui.closeCounts[p[0]]?ui.closeCounts[p[0]]:"")+'"></div>'}).join("")+
+    '<div id="close-res">'+closeResult()+'</div>'+
+    '<button class="primary" data-act="saveClose">'+(ex?"Ovaina ny fanakatonana":"Hanakatona ny andro")+'</button></div>';
+}
+function countedTotal(){var t=0,any=false;PAYS.forEach(function(p){var v=ui.closeCounts[p[0]];if(v!==undefined&&v!==""){any=true;t+=num(v)}});return any?t:null}
+function closeResult(){
+  var k=today(),ct=countedTotal(),r=calc(k,ct);
+  if(ct===null)return '<div class="result muted">Rehefa voasoratra ny vola nisaina, hiseho eto ny vokatra.</div>';
+  var h='<div class="result"><div class="res-row"><span class="muted">Vola nisaina</span><b class="num">'+fmt(ct)+'</b></div>';
+  if(r.mode==="B"){
+    var e=r.ecart,b=e===0?'<span class="badge b-good">Mifanaraka tsara</span>':e<0?'<span class="badge b-bad">Tsy ampy '+fmt(-e)+'</span>':'<span class="badge b-warn">Mihoatra '+fmt(e)+'</span>';
+    h+='<div class="res-row"><span class="muted">Vola tokony ho ao</span><span class="num">'+fmt(r.expected)+'</span></div><div class="res-row"><span class="muted">Elanelana</span>'+b+'</div>';
+    if(e<0)h+='<div class="muted small">Hamarino raha misy varotra, fividianana na fandaniana tsy voasoratra.</div>';
+  }else{
+    h+='<div class="res-row"><span class="muted">Varotra hita (vola)</span><b class="num">'+fmt(r.cashSales)+'</b></div>';
+    if(r.f.trosa)h+='<div class="res-row"><span class="muted">Varotra an-trosa</span><span class="num">'+fmt(r.f.trosa)+'</span></div>';
+    h+='<div class="res-row" style="border-top:1px solid var(--line);margin-top:6px;padding-top:10px"><b>Varotra anio</b><b class="big num" style="font-size:1.8rem">'+fmt(r.ventes)+'</b></div>';
+    if(r.cashSales<0)h+='<div class="badge b-bad" style="margin-top:8px">Misy diso angamba: hamarino ny fividianana sy ny fandaniana voasoratra.</div>';
+  }
+  return h+'</div>';
+}
+
+function vHistory(){
+  var now=new Date(),mk=now.getFullYear()+"-"+pad(now.getMonth()+1);
+  var days={};S.ops.forEach(function(o){days[o.day]=1});Object.keys(S.closings).forEach(function(k){days[k]=1});
+  var keys=Object.keys(days).sort().reverse();
+  var mkeys=keys.filter(function(k){return k.slice(0,7)===mk});
+  var mops=S.ops.filter(function(o){return o.day.slice(0,7)===mk}),mf=flows(mops);
+  var mv=0,unk=0;mkeys.forEach(function(k){var v=dayVentes(k);if(v===null)unk++;else mv+=v});
+  var gain=mv-mf.achat-mf.depense;
+  var head='<div class="card"><div class="eyebrow">'+MONTHS[now.getMonth()]+' '+now.getFullYear()+'</div>'+
+    '<div class="k muted" style="margin-top:6px">Tombony tsotra</div><div class="big num">'+fmt(gain)+'</div>'+
+    '<div class="muted small">Varotra latsaka ny fividianana sy ny fandaniana. Tsy mbola tafiditra ny entana sisa ao amin\'ny fivarotana.</div>'+
+    '<div class="stats"><div class="stat"><div class="v num">'+fmt(mv)+'</div><div class="k">Varotra'+(unk?' ('+unk+' andro tsy voaisa)':'')+'</div></div>'+
+    '<div class="stat"><div class="v num">'+fmt(mf.achat)+'</div><div class="k">Fividianana entana</div></div>'+
+    '<div class="stat"><div class="v num">'+fmt(mf.depense)+'</div><div class="k">Fandaniana</div></div>'+
+    '<div class="stat"><div class="v num">'+fmt(mf.tokantrano)+'</div><div class="k">Ho an\'ny tokantrano</div></div></div></div>';
+  var list=keys.length?'<div class="list">'+keys.slice(0,45).map(function(k){
+    var c=S.closings[k],v=dayVentes(k),f=flows(opsOn(k)),open=ui.openDay===k,b;
+    if(!c)b='<span class="badge b-mute">Tsy voakatona</span>';
+    else if(c.mode==="B")b=c.ecart===0?'<span class="badge b-good">Mifanaraka</span>':c.ecart<0?'<span class="badge b-bad">−'+fmt(-c.ecart)+'</span>':'<span class="badge b-warn">+'+fmt(c.ecart)+'</span>';
+    else b='<span class="badge b-good">Voakatona</span>';
+    return '<button class="li" style="width:100%;text-align:left" data-act="openDay" data-k="'+k+'" aria-expanded="'+open+'"><div class="main"><b>'+dayLabel(k)+'</b><span class="muted small">Varotra <span class="num">'+fmt(v)+'</span> · Nivoaka <span class="num">'+fmt(f.out)+'</span></span></div>'+b+'</button>'+
+      (open?'<div style="padding:0 10px 12px">'+opList(opsOn(k),"Tsy misy fanoratana.")+'</div>':'');
+  }).join("")+'</div>':'<div class="list"><div class="empty">Mbola tsy misy tantara.</div></div>';
+  return banner()+'<div class="top"><div><div class="eyebrow">'+esc(S.profile.shop)+'</div><h1>Tantara</h1></div></div>'+head+'<div class="sec"><h2>Isan\'andro</h2>'+list+'</div>';
+}
+
+function modeOpts(cur,act){
+  return '<button class="opt" data-act="'+act+'" data-v="A" aria-pressed="'+(cur==="A")+'"><b>Isaiko hariva ihany</b><span class="muted small">Tsy manoratra varotra mandritra ny andro. Isaina ny vola hariva, ary ny fampiharana no mahita ny varotra.</span></button>'+
+    '<button class="opt" data-act="'+act+'" data-v="B" aria-pressed="'+(cur==="B")+'"><b>Soratako isaky ny mivarotra</b><span class="muted small">Vola iray isaky ny varotra. Hitanao hariva raha misy vola tsy ampy.</span></button>';
+}
+function vSettings(){
+  var p=S.profile;
+  return banner()+'<div class="top"><div><div class="eyebrow">'+esc(p.shop)+'</div><h1>Fikirakirana</h1></div></div>'+
+    '<div class="stack"><div class="card stack"><div><label class="lbl" for="s-shop">Anaran\'ny fivarotana</label><input id="s-shop" class="inp" value="'+esc(p.shop)+'"></div>'+
+    '<div><label class="lbl" for="s-owner">Anaranao</label><input id="s-owner" class="inp" value="'+esc(p.owner)+'"></div>'+
+    '<div><label class="lbl" for="s-phone">Laharana finday</label><input id="s-phone" class="inp" inputmode="tel" value="'+esc(p.phone)+'"></div>'+
+    '<button class="ghost" data-act="saveProfile">Tehirizina</button></div>'+
+    '<div class="sec"><h2>Fomba fanoratana ny varotra</h2><div class="stack">'+modeOpts(p.mode,"setMode")+'</div></div>'+
+    '<div class="sec card stack"><h2>Tahiry</h2><div class="muted small">Ilaina raha very na simba ny finday. Alefaso any amin\'ny WhatsApp, Messenger na mailakao ny rakitra.</div>'+
+    '<div class="muted small">Tahiry farany: <b>'+(S.lastBackup?dayLabel(keyOf(new Date(S.lastBackup)))+' '+hhmm(S.lastBackup):'mbola tsy nisy')+'</b></div>'+
+    (HOSTED?'<button class="primary" data-act="shareBk">Alefaso ny tahiry</button><button class="ghost" data-act="dlBk">Tehirizo ao amin\'ny finday</button>':'')+
+    (ui.importPending?'<div class="confirm stack"><b>Hosoloina ny angona rehetra amin\'ity finday ity?</b><span class="muted small">Tahirin\'ny "'+esc(ui.importPending.profile.shop)+'" · '+ui.importPending.ops.length+' fanoratana</span><div class="row"><button class="ghost" style="flex:1" data-act="impNo">Tsia</button><button class="ghost danger" style="flex:1" data-act="impYes">Eny, soloy</button></div></div>':
+      '<div><label class="lbl" for="impf">Hamerina tahiry avy amin\'ny rakitra</label><input id="impf" type="file" accept=".txt,.json,text/plain,application/json" class="inp" style="padding-top:12px;font-size:.9rem"></div>')+
+    '<details><summary>Fomba hafa: adika ny soratra</summary><div class="stack" style="margin-top:10px">'+
+    '<textarea id="bk" class="inp" readonly>'+esc(JSON.stringify(S))+'</textarea><button class="ghost" data-act="copyBk">Adika ny tahiry</button>'+
+    '<textarea id="imp" class="inp" placeholder="Apetaho eto ny tahiry"></textarea><button class="ghost" data-act="importBk">Ampidiro</button></div></details></div>'+
+    '<div class="sec card stack"><h2>Tahiry ao amin\'ny GitHub</h2><div class="muted small">Alefa ho azy ho rakitra JSON ao amin\'ny GitHub ny angona rehetra isaky ny misy fanovana, rehefa misy internet.</div>'+
+    '<div><label class="lbl" for="gh-repo">Repo</label><input id="gh-repo" class="inp" autocomplete="off" value="'+esc(SY.repo||DEFAULT_REPO)+'"></div>'+
+    '<div><label class="lbl" for="gh-token">Token</label><input id="gh-token" class="inp" type="password" autocomplete="off" placeholder="'+(SY.token?'•••••• (voatahiry)':'github_pat_…')+'"></div>'+
+    '<div><label class="lbl" for="gh-path">Rakitra</label><input id="gh-path" class="inp" autocomplete="off" value="'+esc(SY.path||defaultPath())+'"></div>'+
+    '<div class="muted small">'+syncStatus()+'</div>'+
+    '<button class="primary" data-act="ghSave">Tehirizo ary alefaso</button>'+
+    (syncOn()?'<button class="ghost" data-act="ghPull">Hamerina avy amin\'ny GitHub</button><button class="ghost" data-act="ghOff">Ajanony</button>':'')+'</div>'+
+    (deferredInstall&&!isStandalone()?'<button class="ghost" data-act="install">Apetraho eo amin\'ny efijery ny fampiharana</button>':'')+
+    '<div class="sec card stack"><h2>Hamafa ny zava-drehetra</h2><div class="muted small">Ho voafafa daholo ny varotra, ny trosa ary ny tantara amin\'ity finday ity.</div>'+
+    (ui.resetAsk?'<div class="row"><button class="ghost" style="flex:1" data-act="resetNo">Tsia</button><button class="ghost danger" style="flex:1" data-act="resetYes">Eny, fafao</button></div>':'<button class="ghost" data-act="resetAsk">Hamafa…</button>')+'</div>'+
+    '<div class="muted small" style="text-align:center;padding:8px 0">Bokin\'ny Fivarotana · dikan-teny '+APP_VERSION+'</div></div>';
+}
+
+function vOnboard(){
+  return '<div class="formhead"><div><div class="eyebrow">Tongasoa</div><h1>Bokin\'ny Fivarotana</h1></div></div>'+
+    '<div class="stack"><div class="card stack">'+
+    '<div><label class="lbl" for="ob-shop">Anaran\'ny fivarotana</label><input id="ob-shop" class="inp" autocomplete="off"></div>'+
+    '<div><label class="lbl" for="ob-owner">Anaranao</label><input id="ob-owner" class="inp" autocomplete="off"></div>'+
+    '<div><label class="lbl" for="ob-phone">Laharana finday (raha tianao)</label><input id="ob-phone" class="inp" inputmode="tel" autocomplete="off"></div></div>'+
+    '<div><h2 style="font-size:1.1rem;margin-bottom:8px">Ahoana no hanoratanao ny varotra?</h2><div class="stack">'+modeOpts(ui.obMode,"obMode")+'</div></div>'+
+    '<div class="card stack"><div><h2 style="font-size:1.1rem">Ohatrinona ny vola ananao izao?</h2><div class="muted small">Ao anaty vata sy ao amin\'ny finday.</div></div>'+
+    PAYS.map(function(p){return '<div><label class="lbl" for="ob-'+p[0]+'">'+p[1]+'</label><input id="ob-'+p[0]+'" class="inp money" inputmode="numeric" autocomplete="off" placeholder="0"></div>'}).join("")+'</div>'+
+    '<button class="primary" data-act="finishOb">Hanomboka</button>'+
+    '<button class="ghost" data-act="go" data-v="home">Hijery ohatra aloha</button></div>';
+}
+
+var VIEWS={home:vHome,vente:vVente,trosa:vTrosa,achat:vAchat,depense:vDepense,close:vClose,history:vHistory,settings:vSettings,onboard:vOnboard};
+var FORM={vente:1,achat:1,depense:1,close:1,onboard:1};
+function render(){
+  var app=$("app");
+  app.className="app"+(FORM[ui.view]?" form":"");
+  app.innerHTML=VIEWS[ui.view]();
+  $("nav").hidden=!!FORM[ui.view];
+  Array.prototype.forEach.call(document.querySelectorAll(".nav button"),function(b){
+    if(b.getAttribute("data-v")===ui.view)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  $("sheet").innerHTML=sheetHtml();
+  if(ui.sheet){var i=$("sh-amt");if(i)i.focus()}
+}
+/* re-render for background events without wiping a form the user is filling */
+function softRender(){if(!FORM[ui.view]&&!ui.sheet&&!(document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName)))render()}
+function acceptImport(x){x.demo=false;S=x;S.opens=S.opens||[];ui.importPending=null;save();logOpen();go("home");toast("Voaverina ny tahiry")}
+function parseBackup(txt){var x=JSON.parse(txt);if(!x||!x.profile||!Array.isArray(x.ops)||typeof x.closings!=="object")throw new Error("bad");return x}
+function go(v){
+  ui.view=v;ui.pendingDel=null;ui.resetAsk=false;
+  if(v==="vente"){ui.amt="";ui.pay="cash"}
+  if(v==="achat")ui.achat=null;
+  if(v==="depense")ui.dep=null;
+  if(v==="close")ui.closeInit=false;
+  if(v!=="trosa")ui.q="";
+  render();window.scrollTo(0,0);
+}
+var tt;function toast(m){var t=$("toast");t.textContent=m;t.classList.remove("hide");clearTimeout(tt);tt=setTimeout(function(){t.classList.add("hide")},1900)}
+
+/* ---------- events ---------- */
+document.addEventListener("click",function(e){
+  var el=e.target.closest("[data-act]");if(!el)return;
+  var act=el.getAttribute("data-act");
+  if(act==="closeSheet"&&e.target.closest("[data-stop]")&&el.classList.contains("sheet"))return;
+  var d=function(k){return el.getAttribute("data-"+k)};
+  switch(act){
+    case "go":go(d("v"));break;
+    case "start":ui.obMode="A";go("onboard");break;
+    case "key":{var k=d("k");if(k==="⌫")ui.amt=ui.amt.slice(0,-1);else if((ui.amt+k).replace(/^0+/,"").length<=9)ui.amt=(ui.amt+k).replace(/^0+/,"");render();break}
+    case "quick":ui.amt=d("v");render();break;
+    case "pay":ui.pay=d("p");render();break;
+    case "saveVente":{var a=num(ui.amt);if(!a)return;addOp({type:"vente",amount:a,pay:ui.pay});ui.amt="";render();toast("Voaraikitra: "+fmt(a));break}
+    case "del":ui.pendingDel=d("id");render();break;
+    case "delok":S.ops=S.ops.filter(function(o){return o.id!==d("id")});ui.pendingDel=null;save();render();toast("Voafafa");break;
+    case "sheet":ui.sheet={k:d("k"),n:d("n"),pay:"cash"};render();break;
+    case "shpay":ui.sheet.pay=d("p");Array.prototype.forEach.call(el.parentNode.children,function(c){c.setAttribute("aria-pressed",c===el)});break;
+    case "closeSheet":ui.sheet=null;render();break;
+    case "saveSheet":{var v=num($("sh-amt").value);if(!v){toast("Soraty ny vola");return}
+      var s=ui.sheet;addOp(s.k==="trosa"?{type:"trosa",client:s.n,amount:v}:{type:"naloa",client:s.n,amount:v,pay:s.pay});
+      ui.sheet=null;ui.q="";render();toast((s.k==="trosa"?"Trosa voasoratra: ":"Naloa: ")+fmt(v));break}
+    case "addItem":ui.achat.items.push({name:"",qty:"",price:""});render();var n=$("it-n-"+(ui.achat.items.length-1));if(n)n.focus();break;
+    case "apay":ui.achat.pay=d("p");Array.prototype.forEach.call(el.parentNode.children,function(c){c.setAttribute("aria-pressed",c===el)});break;
+    case "saveAchat":{var items=ui.achat.items.filter(function(i){return i.name.trim()&&num(i.qty)&&num(i.price)}).map(function(i){return {name:i.name.trim(),qty:num(i.qty),price:num(i.price)}});
+      if(!items.length){toast("Soraty ny entana, ny isany ary ny vidiny");return}
+      var tot=sum(items,function(i){return i.qty*i.price});
+      addOp({type:"achat",supplier:ui.achat.supplier.trim(),items:items,amount:tot,pay:ui.achat.pay});go("home");toast("Fividianana voasoratra: "+fmt(tot));break}
+    case "dkind":ui.dep.kind=d("v");render();break;
+    case "dcat":ui.dep.cat=d("v");Array.prototype.forEach.call(el.parentNode.children,function(c){c.setAttribute("aria-pressed",c===el)});break;
+    case "dpay":ui.dep.pay=d("p");Array.prototype.forEach.call(el.parentNode.children,function(c){c.setAttribute("aria-pressed",c===el)});break;
+    case "saveDep":{var am=num($("d-amt").value),dp=ui.dep;if(!am){toast("Soraty ny vola");return}
+      if(dp.kind==="depense"&&!dp.cat){toast("Safidio hoe inona ny fandaniana");return}
+      var o={type:dp.kind,amount:am,pay:dp.pay};if(dp.kind==="depense"){o.cat=dp.cat;var nt=$("d-note");if(nt&&nt.value.trim())o.note=nt.value.trim()}
+      addOp(o);go("home");toast("Voaraikitra: "+fmt(am));break}
+    case "saveClose":{var ct=countedTotal();if(ct===null){toast("Isao aloha ny vola");return}
+      var k2=today(),r=calc(k2,ct),counts={};PAYS.forEach(function(p){counts[p[0]]=num(ui.closeCounts[p[0]])});
+      S.closings[k2]={counts:counts,total:ct,at:Date.now(),mode:r.mode,start:r.start,ventes:r.ventes,expected:r.expected,ecart:r.ecart};
+      save();go("home");toast("Voakatona ny andro. Varotra: "+fmt(r.ventes));break}
+    case "openDay":ui.openDay=ui.openDay===d("k")?null:d("k");ui.pendingDel=null;render();break;
+    case "setMode":S.profile.mode=d("v");save();render();toast("Voaova ny fomba fanoratana");break;
+    case "obMode":ui.obMode=d("v");Array.prototype.forEach.call(el.parentNode.children,function(c){c.setAttribute("aria-pressed",c===el)});break;
+    case "saveProfile":S.profile.shop=$("s-shop").value.trim()||S.profile.shop;S.profile.owner=$("s-owner").value.trim();S.profile.phone=$("s-phone").value.trim();save();render();toast("Voatahiry");break;
+    case "copyBk":{var txt=$("bk").value;var fall=function(){var t=$("bk");t.focus();t.select();toast("Voafantina: adikao")};
+      try{navigator.clipboard.writeText(txt).then(function(){toast("Voadika ny tahiry")},fall)}catch(err){fall()}break}
+    case "importBk":{try{ui.importPending=parseBackup($("imp").value);render();window.scrollTo(0,0)}catch(err){toast("Tsy mety io tahiry io")}break}
+    case "impYes":acceptImport(ui.importPending);break;
+    case "impNo":ui.importPending=null;render();break;
+    case "shareBk":shareBackup();break;
+    case "dlBk":downloadBackup();break;
+    case "ghSave":{
+      if(S.demo){toast("Manomboka aloha vao mampiasa ny GitHub");break}
+      var tk=$("gh-token").value.trim();if(tk)SY.token=tk;
+      SY.repo=$("gh-repo").value.trim().replace(/^https?:\/\/github\.com\//,"").replace(/\/+$/,"");
+      SY.path=$("gh-path").value.trim()||defaultPath();SY.sha=null;SY.err="";sySave();
+      if(!syncOn()){toast("Soraty ny repo sy ny token");render();break}
+      render();toast("Alefa…");
+      syncPush().then(function(){toast(SY.err?"Tsy nety: "+SY.err:"Lasa ao amin'ny GitHub")});break}
+    case "ghPull":syncPull();break;
+    case "ghOff":SY={id:SY.id};sySave();render();toast("Najanona");break;
+    case "install":if(deferredInstall){var di=deferredInstall;deferredInstall=null;di.prompt();(di.userChoice||Promise.resolve()).then(function(){softRender()})}break;
+    case "applyUpdate":if(updateReady){updateReady.postMessage({type:"SKIP_WAITING"});toast("Havaozina…")}break;
+    case "resetAsk":ui.resetAsk=true;render();break;
+    case "resetNo":ui.resetAsk=false;render();break;
+    case "resetYes":try{localStorage.removeItem(KEY)}catch(err){}S=demo();ui.resetAsk=false;go("home");toast("Voafafa daholo");break;
+    case "finishOb":{var shop=$("ob-shop").value.trim();if(!shop){toast("Soraty ny anaran'ny fivarotana");$("ob-shop").focus();return}
+      var cnt={},tot2=0;PAYS.forEach(function(p){cnt[p[0]]=num($("ob-"+p[0]).value);tot2+=cnt[p[0]]});
+      S={v:1,demo:false,created:Date.now(),appVersion:APP_VERSION,profile:{shop:shop,owner:$("ob-owner").value.trim(),phone:$("ob-phone").value.trim(),mode:ui.obMode},opening:{counts:cnt,total:tot2,day:today()},ops:[],closings:{},opens:[]};
+      save();logOpen();
+      try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(err){}
+      go("home");toast("Tongasoa! Afaka manomboka ianao.");break}
+  }
+});
+document.addEventListener("input",function(e){
+  var t=e.target;
+  if(t.id==="q"){ui.q=t.value;var pos=t.selectionStart;render();var q=$("q");q.focus();try{q.setSelectionRange(pos,pos)}catch(err){}return}
+  if(t.id==="sup"&&ui.achat){ui.achat.supplier=t.value;return}
+  if(t.getAttribute("data-f")&&ui.achat){
+    var i=+t.getAttribute("data-i"),f=t.getAttribute("data-f");ui.achat.items[i][f]=t.value;
+    if(f==="name"){var kp=knownProducts(),pr=kp.prices[t.value.trim().toLowerCase()],pi=$("it-p-"+i);if(pr&&pi&&!pi.value){pi.value=pr;ui.achat.items[i].price=String(pr)}}
+    $("achat-total").textContent=fmt(achatTotal());return}
+  if(t.getAttribute("data-c")){ui.closeCounts[t.getAttribute("data-c")]=t.value;$("close-res").innerHTML=closeResult();return}
+});
+document.addEventListener("keydown",function(e){
+  if(ui.view==="vente"&&!ui.sheet){
+    if(/^\d$/.test(e.key)){if((ui.amt+e.key).replace(/^0+/,"").length<=9)ui.amt=(ui.amt+e.key).replace(/^0+/,"");render()}
+    else if(e.key==="Backspace"){ui.amt=ui.amt.slice(0,-1);render()}
+    else if(e.key==="Enter"&&e.target.tagName!=="BUTTON"){var b=document.querySelector('[data-act="saveVente"]');if(b&&!b.disabled)b.click()}
+  }
+  if(e.key==="Escape"&&ui.sheet){ui.sheet=null;render()}
+  if(e.key==="Enter"&&ui.sheet&&e.target.id==="sh-amt"){document.querySelector('[data-act="saveSheet"]').click()}
+});
+
+document.addEventListener("change",function(e){
+  var t=e.target;if(t.id!=="impf"||!t.files||!t.files[0])return;
+  var r=new FileReader();
+  r.onload=function(){try{ui.importPending=parseBackup(String(r.result));render()}catch(err){toast("Tsy mety io rakitra io")}};
+  r.onerror=function(){toast("Tsy voavaky ny rakitra")};
+  r.readAsText(t.files[0]);
+});
+document.addEventListener("visibilitychange",function(){
+  if(document.visibilityState==="visible"&&S){logOpen();softRender()}
+  else if(document.visibilityState==="hidden"&&syncTimer)syncPush(); /* app sent to background: don't wait for the debounce */
+});
+window.addEventListener("online",function(){if(SY.dirty)syncPush()});
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();deferredInstall=e;softRender()});
+window.addEventListener("appinstalled",function(){deferredInstall=null;softRender();toast("Voapetraka ny fampiharana")});
+
+/* offline shell + update flow (hosted build only) */
+if(HOSTED&&"serviceWorker" in navigator){
+  var hadController=!!navigator.serviceWorker.controller,reloading=false;
+  navigator.serviceWorker.addEventListener("controllerchange",function(){if(!hadController||reloading)return;reloading=true;location.reload()});
+  window.addEventListener("load",function(){
+    navigator.serviceWorker.register("sw.js").then(function(reg){
+      function track(w){if(!w)return;w.addEventListener("statechange",function(){if(w.state==="installed"&&navigator.serviceWorker.controller){updateReady=w;softRender()}})}
+      if(reg.waiting&&navigator.serviceWorker.controller){updateReady=reg.waiting;softRender()}
+      track(reg.installing);
+      reg.addEventListener("updatefound",function(){track(reg.installing)});
+      setInterval(function(){reg.update().catch(function(){})},36e5);
+    }).catch(function(){});
+  });
+}
+
+load();render();
+if(SY.dirty)syncSoon();
+})();
+</script>
+</body>
+</html>
