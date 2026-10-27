@@ -44,3 +44,24 @@ Remplacer les fichiers dans le dépôt GitHub par ceux de la nouvelle version (U
 - **Effacer les données de Chrome efface les données de l'application.** Le prévenir à l'épicier, et faire une sauvegarde avant toute manipulation du téléphone.
 - Un même téléphone = une seule boutique.
 - Testé pour Chrome sur Android. Sur iPhone, l'installation passe par Safari → Partager → *Sur l'écran d'accueil*, sans bandeau d'installation.
+
+## 6. Données en JSON dans GitHub
+
+- **Application** (publique) : https://jejew03.github.io/bokin-fivarotana/ (dépôt `jejew03/bokin-fivarotana`)
+- **Données** (privé) : dépôt `jejew03/bokin-data`. Chaque boutique écrit **un seul fichier** `data/<boutique>-<id>.json`, qui contient tout son état (ventes, trosa, achats, dépenses, clôtures). Il est mis à jour 5 secondes après chaque modification, ou dès que la connexion revient.
+
+### Créer le jeton (une fois)
+1. github.com → Settings → Developer settings → **Fine-grained tokens** → *Generate new token*.
+2. Repository access : **Only select repositories → `bokin-data`**.
+3. Permissions → Repository → **Contents : Read and write**. Rien d'autre.
+4. Choisir une date d'expiration couvrant la durée du test.
+
+### Sur chaque téléphone
+**Fikirakirana → Tahiry ao amin'ny GitHub** : coller le jeton, puis appuyer sur **Tehirizo ary alefaso**. Le jeton reste sur le téléphone ; il n'est jamais écrit dans le code publié.
+Pour restaurer la boutique sur un nouveau téléphone : saisir le même nom de fichier (`Rakitra`) et le même jeton, puis **Hamerina avy amin'ny GitHub**.
+
+### Sécurité
+Le jeton donne accès en lecture et en écriture à **tous** les fichiers de `bokin-data`. Toute personne qui a le téléphone en main peut donc lire les données des autres boutiques. En cas de téléphone perdu : révoquer le jeton sur GitHub et en créer un nouveau.
+
+### Mise à jour
+`python3 build.py v3` (nouveau numéro à chaque fois), puis dans `bokin-pwa/` : `git add -A && git commit -m "..." && git push`.
